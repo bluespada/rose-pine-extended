@@ -74,7 +74,7 @@ return {
 > [!IMPORTANT]
 > Configure options _before_ setting colorscheme.
 
-Rosé Pine has three variants: main, moon, and dawn, plus an opt-in dracula variant. By default, `vim.o.background` is followed, using dawn when light and `dark_variant` when dark. Dracula is a built-in variant with backgrounds and surfaces close to main and accents mapped to official [Dracula hues](https://draculatheme.com/spec); it is never auto-selected.
+Rosé Pine has three variants: main, moon, and dawn, plus an opt-in dracula variant. By default, `vim.o.background` is followed, using dawn when light and `dark_variant` when dark. Dracula is a built-in variant following official [Dracula hues](https://draculatheme.com/spec); it is never auto-selected.
 
 Colour values accept named colours from the [Rosé Pine palette](https://rosepinetheme.com/palette/ingredients/), e.g. "foam", or valid hex, e.g. "#fa8072".
 
@@ -162,7 +162,7 @@ vim.cmd("colorscheme rose-pine")
 -- vim.cmd("colorscheme rose-pine-main")
 -- vim.cmd("colorscheme rose-pine-moon")
 -- vim.cmd("colorscheme rose-pine-dawn")
--- vim.cmd("colorscheme rose-pine-dracula") -- Rosé Pine UI, Dracula syntax
+-- vim.cmd("colorscheme rose-pine-dracula") -- Dracula variant
 ```
 
 > [!NOTE]

@@ -61,13 +61,10 @@ local variants = {
 		none = "NONE",
 	},
 	dracula = {
-		-- Built-in Dracula variant: backgrounds and surfaces stay close to
-		-- main, while accents follow the official Dracula spec
-		-- (https://draculatheme.com/spec) by design. That means
-		-- diagnostics, git signs, titles, and terminal colors render in
-		-- Dracula hues too, not just syntax groups. Finer splits Rosé Pine
-		-- conflates (String vs Number, etc.) are handled by an override
-		-- table in lua/rose-pine.lua.
+		-- Syntax-only variant: Rosé Pine palette untouched, plus a
+		-- separate dracula_* table for syntax overrides in
+		-- lua/rose-pine.lua. Official hues:
+		-- https://draculatheme.com/spec.
 		_dracula = true,
 		_nc = "#16141f",
 		base = "#191724",
@@ -76,17 +73,26 @@ local variants = {
 		muted = "#6e6a86",
 		subtle = "#908caa",
 		text = "#e0def4",
-		love = "#FF5555",
-		gold = "#FFB86C",
-		rose = "#50FA7B",
-		pine = "#FF79C6",
-		foam = "#8BE9FD",
-		iris = "#BD93F9",
-		leaf = "#50FA7B",
+		love = "#eb6f92",
+		gold = "#f6c177",
+		rose = "#ebbcba",
+		pine = "#31748f",
+		foam = "#9ccfd8",
+		iris = "#c4a7e7",
+		leaf = "#95b1ac",
 		highlight_low = "#21202e",
 		highlight_med = "#403d52",
 		highlight_high = "#524f67",
 		none = "NONE",
+		-- Separate Dracula colors, never reuse Rosé Pine roles.
+		dracula_comment = "#6272a4",
+		dracula_red = "#ff5555",
+		dracula_orange = "#ffb86c",
+		dracula_yellow = "#f1fa8c",
+		dracula_green = "#50fa7b",
+		dracula_cyan = "#8be9fd",
+		dracula_purple = "#bd93f9",
+		dracula_pink = "#ff79c6",
 	},
 }
 

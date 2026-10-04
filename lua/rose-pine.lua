@@ -21,18 +21,20 @@ local function set_highlights()
 	end
 
 	local highlights = {}
-	-- Dracula syntax override: official spec roles that Rosé Pine's palette
-	-- remap alone cannot express (main has no yellow/orange/pink splits).
-	-- Complements the dracula palette table, which already maps accents to
-	-- Dracula hues. Dracula hex source: https://draculatheme.com/spec
+	-- Dracula syntax-only override: Rosé Pine palette untouched, syntax
+	-- groups use the separate palette.dracula_* colors (official hues:
+	-- https://draculatheme.com/spec). UI, diagnostics, git, and terminal
+	-- keep Rosé Pine colors.
 	local dracula_highlights = nil
 	if palette._dracula then
 		local dracula = {
-			comment = "#6272A4",
-			yellow = "#F1FA8C",
-			orange = "#FFB86C",
-			pink = "#FF79C6",
-			purple_italic = { fg = "#BD93F9", italic = styles.italic },
+			comment = palette.dracula_comment,
+			yellow = palette.dracula_yellow,
+			orange = palette.dracula_orange,
+			pink = palette.dracula_pink,
+			green = palette.dracula_green,
+			cyan = palette.dracula_cyan,
+			purple_italic = { fg = palette.dracula_purple, italic = styles.italic },
 		}
 		highlights = {
 			-- Classic Vim groups
@@ -43,7 +45,7 @@ local function set_highlights()
 			Float = { fg = dracula.orange },
 			Boolean = { fg = dracula.orange },
 			Constant = { fg = dracula.orange },
-			Function = { fg = palette.rose }, -- green remap comes via palette
+			Function = { fg = dracula.green }, -- Dracula green
 			Identifier = { fg = palette.text },
 			Statement = { fg = dracula.pink, bold = styles.bold },
 			Conditional = { fg = dracula.pink },
@@ -55,25 +57,28 @@ local function set_highlights()
 			PreProc = { fg = dracula.pink },
 			Include = { fg = dracula.pink },
 			Define = { fg = dracula.pink },
-			Macro = { fg = palette.rose }, -- green in Dracula, keep rose-green
+			Macro = { fg = dracula.green }, -- Dracula green
 			PreCondit = { fg = dracula.pink },
 			StorageClass = { fg = dracula.pink },
-			Structure = { fg = palette.foam }, -- cyan in both themes
+			Structure = { fg = dracula.cyan }, -- Dracula cyan
 			Typedef = { fg = dracula.pink },
-			Type = { fg = palette.foam, italic = styles.italic }, -- cyan italic
+			Type = { fg = dracula.cyan, italic = styles.italic }, -- Dracula cyan
 			Special = { fg = dracula.pink },
-			SpecialComment = { fg = palette.foam, italic = styles.italic },
+			SpecialComment = { fg = dracula.cyan, italic = styles.italic },
 			Delimiter = { fg = palette.text }, -- foreground per spec
-			Todo = { fg = palette.foam, bg = palette.foam, blend = 20 },
+			Todo = { fg = dracula.cyan, bg = dracula.cyan, blend = 20 },
 			Underlined = { fg = palette.text, underline = true },
 
 			-- Treesitter: same spec roles, Dracula's own TS links
 			["@comment"] = { link = "Comment" },
 			["@string"] = { link = "String" },
-			["@string.regexp"] = { link = "String" },
-			["@string.escape"] = { link = "String" },
+			["@string.regexp"] = { fg = dracula.cyan },
+			["@string.escape"] = { fg = dracula.cyan },
 			["@string.special"] = { link = "String" },
-			["@string.special.symbol"] = { fg = palette.iris },
+			["@string.special.symbol"] = { fg = palette.dracula_purple },
+			["@string.special.url"] = { fg = dracula.cyan },
+			["@markup.heading"] = { fg = dracula.yellow },
+			["@markup.list"] = { fg = dracula.pink },
 			["@character"] = { link = "Character" },
 			["@character.special"] = { link = "Character" },
 			["@boolean"] = { link = "Boolean" },
@@ -84,42 +89,54 @@ local function set_highlights()
 			["@constant.builtin"] = { link = "Constant" },
 			["@constant.macro"] = { link = "Constant" },
 			["@function"] = { link = "Function" },
-			["@function.builtin"] = { fg = palette.foam }, -- cyan per Dracula
+			["@function.builtin"] = { fg = dracula.cyan }, -- cyan per Dracula
 			["@function.macro"] = { link = "Function" },
 			["@function.method"] = { link = "Function" },
 			["@function.method.call"] = { link = "Function" },
-			["@constructor"] = { fg = palette.foam },
+			["@constructor"] = { fg = dracula.cyan },
 			["@keyword"] = { link = "Keyword" },
+			["@keyword.coroutine"] = { fg = dracula.pink },
 			["@keyword.function"] = { fg = dracula.pink },
 			["@keyword.operator"] = { link = "Operator" },
-			["@type"] = { fg = palette.foam, italic = styles.italic },
-			["@type.builtin"] = { fg = palette.foam }, -- Special in Dracula
-			["@attribute"] = { fg = palette.rose, italic = styles.italic },
-			["@attribute.builtin"] = { fg = palette.rose, bold = styles.bold },
+			["@keyword.import"] = { fg = dracula.pink },
+			["@keyword.storage"] = { fg = dracula.cyan },
+			["@keyword.repeat"] = { fg = dracula.pink },
+			["@keyword.return"] = { fg = dracula.pink },
+			["@keyword.debug"] = { fg = dracula.pink },
+			["@keyword.exception"] = { fg = dracula.pink },
+			["@keyword.conditional"] = { fg = dracula.pink },
+			["@keyword.conditional.ternary"] = { fg = dracula.pink },
+			["@keyword.directive"] = { fg = dracula.cyan },
+			["@keyword.directive.define"] = { fg = dracula.cyan },
+			["@type"] = { fg = dracula.cyan, italic = styles.italic },
+			["@type.builtin"] = { fg = dracula.cyan }, -- Special in Dracula
+			["@attribute"] = { fg = dracula.green, italic = styles.italic },
+			["@attribute.builtin"] = { fg = dracula.green, bold = styles.bold },
 			["@property"] = { fg = palette.text }, -- Identifier in Dracula
 			["@variable"] = { fg = palette.text },
 			["@variable.builtin"] = dracula.purple_italic,
 			["@variable.parameter"] = { fg = dracula.orange, italic = styles.italic },
 			["@variable.parameter.builtin"] = { fg = dracula.orange, italic = styles.italic, bold = styles.bold },
 			["@variable.member"] = { fg = dracula.orange },
-			["@module"] = { fg = palette.foam }, -- Structure/cyan
-			["@module.builtin"] = { fg = palette.foam },
+			["@module"] = { fg = dracula.cyan }, -- Structure/cyan
+			["@module.builtin"] = { fg = dracula.cyan },
 			["@label"] = dracula.purple_italic,
 			["@operator"] = { link = "Operator" },
 			["@punctuation.delimiter"] = { fg = palette.text },
 			["@punctuation.bracket"] = { fg = palette.text },
 			["@punctuation.special"] = { link = "Special" },
-			["@tag"] = { fg = palette.foam },
-			["@tag.attribute"] = { fg = palette.rose, italic = styles.italic },
+			["@tag"] = { fg = dracula.cyan },
+			["@tag.attribute"] = { fg = dracula.green, italic = styles.italic },
 			["@tag.delimiter"] = { fg = palette.text },
 			["@markup.heading"] = { fg = dracula.yellow },
+			["@markup.list"] = { fg = dracula.pink },
 
 			-- LSP semantic tokens mirror the same roles
 			["@lsp.type.class"] = { link = "@type" },
 			["@lsp.type.decorator"] = { link = "@attribute" },
-			["@lsp.type.enumMember"] = { fg = palette.iris },
+			["@lsp.type.enumMember"] = { fg = palette.dracula_purple },
 			["@lsp.type.function"] = { link = "@function" },
-			["@lsp.type.macro"] = { fg = palette.foam },
+			["@lsp.type.macro"] = { fg = dracula.cyan },
 			["@lsp.type.method"] = { link = "@function" },
 			["@lsp.type.namespace"] = { link = "@module" },
 			["@lsp.type.parameter"] = { link = "@variable.parameter" },
