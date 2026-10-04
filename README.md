@@ -74,14 +74,14 @@ return {
 > [!IMPORTANT]
 > Configure options _before_ setting colorscheme.
 
-Rosé Pine has three variants: main, moon, and dawn. By default, `vim.o.background` is followed, using dawn when light and `dark_variant` when dark.
+Rosé Pine has three variants: main, moon, and dawn, plus an opt-in dracula variant. By default, `vim.o.background` is followed, using dawn when light and `dark_variant` when dark. Dracula is a built-in variant with backgrounds and surfaces close to main and accents mapped to official [Dracula hues](https://draculatheme.com/spec); it is never auto-selected.
 
 Colour values accept named colours from the [Rosé Pine palette](https://rosepinetheme.com/palette/ingredients/), e.g. "foam", or valid hex, e.g. "#fa8072".
 
 ```lua
 require("rose-pine").setup({
-    variant = "auto", -- auto, main, moon, or dawn
-    dark_variant = "main", -- main, moon, or dawn
+    variant = "auto", -- auto, main, moon, dawn, or dracula
+    dark_variant = "main", -- main, moon, or dracula
     dim_inactive_windows = false,
     extend_background_behind_borders = true,
 
@@ -162,10 +162,28 @@ vim.cmd("colorscheme rose-pine")
 -- vim.cmd("colorscheme rose-pine-main")
 -- vim.cmd("colorscheme rose-pine-moon")
 -- vim.cmd("colorscheme rose-pine-dawn")
+-- vim.cmd("colorscheme rose-pine-dracula") -- Rosé Pine UI, Dracula syntax
 ```
 
 > [!NOTE]
 > Visit the [wiki](https://github.com/rose-pine/neovim/wiki) for [plugin configurations](https://github.com/rose-pine/neovim/wiki/Plugin-configurations) and [recipes](https://github.com/rose-pine/neovim/wiki/Recipes).
+
+## Troubleshooting
+
+**Wrong colors or colored backgrounds inside tmux (see [#373](https://github.com/rose-pine/neovim/issues/373)).**
+This is a terminal truecolor passthrough problem, not a theme bug. The theme
+needs 24-bit color (`termguicolors`); when tmux advertises only 256 colors,
+Neovim falls back and highlights render incorrectly. Fix the tmux side:
+
+```tmux
+set -g default-terminal 'tmux-256color'
+set -as terminal-overrides ',*256col*:RGB'
+set -as terminal-overrides ',*:Smulx=\E[4::%p1%dm' # undercurl support
+set -as terminal-overrides ',*:Setulc=\E[58::2::%p1%{65536}%/%d::%p1%{256}%/%{255}%&%d%;m' # underscore colors - needs tmux-3.0
+```
+
+Then verify with `:checkhealth` (look for truecolor support) and
+`:set termguicolors?` (should print `termguicolors`).
 
 ## Contributing
 

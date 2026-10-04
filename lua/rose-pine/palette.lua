@@ -60,6 +60,34 @@ local variants = {
 		highlight_high = "#cecacd",
 		none = "NONE",
 	},
+	dracula = {
+		-- Built-in Dracula variant: backgrounds and surfaces stay close to
+		-- main, while accents follow the official Dracula spec
+		-- (https://draculatheme.com/spec) by design. That means
+		-- diagnostics, git signs, titles, and terminal colors render in
+		-- Dracula hues too, not just syntax groups. Finer splits Rosé Pine
+		-- conflates (String vs Number, etc.) are handled by an override
+		-- table in lua/rose-pine.lua.
+		_dracula = true,
+		_nc = "#16141f",
+		base = "#191724",
+		surface = "#1f1d2e",
+		overlay = "#26233a",
+		muted = "#6e6a86",
+		subtle = "#908caa",
+		text = "#e0def4",
+		love = "#FF5555",
+		gold = "#FFB86C",
+		rose = "#50FA7B",
+		pine = "#FF79C6",
+		foam = "#8BE9FD",
+		iris = "#BD93F9",
+		leaf = "#50FA7B",
+		highlight_low = "#21202e",
+		highlight_med = "#403d52",
+		highlight_high = "#524f67",
+		none = "NONE",
+	},
 }
 
 if options.palette ~= nil and next(options.palette) then

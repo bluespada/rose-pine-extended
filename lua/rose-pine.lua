@@ -21,6 +21,115 @@ local function set_highlights()
 	end
 
 	local highlights = {}
+	-- Dracula syntax override: official spec roles that Rosé Pine's palette
+	-- remap alone cannot express (main has no yellow/orange/pink splits).
+	-- Complements the dracula palette table, which already maps accents to
+	-- Dracula hues. Dracula hex source: https://draculatheme.com/spec
+	local dracula_highlights = nil
+	if palette._dracula then
+		local dracula = {
+			comment = "#6272A4",
+			yellow = "#F1FA8C",
+			orange = "#FFB86C",
+			pink = "#FF79C6",
+			purple_italic = { fg = "#BD93F9", italic = styles.italic },
+		}
+		highlights = {
+			-- Classic Vim groups
+			Comment = { fg = dracula.comment, italic = styles.italic },
+			String = { fg = dracula.yellow },
+			Character = { fg = dracula.yellow },
+			Number = { fg = dracula.orange },
+			Float = { fg = dracula.orange },
+			Boolean = { fg = dracula.orange },
+			Constant = { fg = dracula.orange },
+			Function = { fg = palette.rose }, -- green remap comes via palette
+			Identifier = { fg = palette.text },
+			Statement = { fg = dracula.pink, bold = styles.bold },
+			Conditional = { fg = dracula.pink },
+			Repeat = { fg = dracula.pink },
+			Label = { fg = dracula.pink },
+			Operator = { fg = dracula.pink },
+			Keyword = { fg = dracula.pink },
+			Exception = { fg = dracula.pink },
+			PreProc = { fg = dracula.pink },
+			Include = { fg = dracula.pink },
+			Define = { fg = dracula.pink },
+			Macro = { fg = palette.rose }, -- green in Dracula, keep rose-green
+			PreCondit = { fg = dracula.pink },
+			StorageClass = { fg = dracula.pink },
+			Structure = { fg = palette.foam }, -- cyan in both themes
+			Typedef = { fg = dracula.pink },
+			Type = { fg = palette.foam, italic = styles.italic }, -- cyan italic
+			Special = { fg = dracula.pink },
+			SpecialComment = { fg = palette.foam, italic = styles.italic },
+			Delimiter = { fg = palette.text }, -- foreground per spec
+			Todo = { fg = palette.foam, bg = palette.foam, blend = 20 },
+			Underlined = { fg = palette.text, underline = true },
+
+			-- Treesitter: same spec roles, Dracula's own TS links
+			["@comment"] = { link = "Comment" },
+			["@string"] = { link = "String" },
+			["@string.regexp"] = { link = "String" },
+			["@string.escape"] = { link = "String" },
+			["@string.special"] = { link = "String" },
+			["@string.special.symbol"] = { fg = palette.iris },
+			["@character"] = { link = "Character" },
+			["@character.special"] = { link = "Character" },
+			["@boolean"] = { link = "Boolean" },
+			["@number"] = { link = "Number" },
+			["@number.float"] = { link = "Number" },
+			["@float"] = { link = "Number" },
+			["@constant"] = { link = "Constant" },
+			["@constant.builtin"] = { link = "Constant" },
+			["@constant.macro"] = { link = "Constant" },
+			["@function"] = { link = "Function" },
+			["@function.builtin"] = { fg = palette.foam }, -- cyan per Dracula
+			["@function.macro"] = { link = "Function" },
+			["@function.method"] = { link = "Function" },
+			["@function.method.call"] = { link = "Function" },
+			["@constructor"] = { fg = palette.foam },
+			["@keyword"] = { link = "Keyword" },
+			["@keyword.function"] = { fg = dracula.pink },
+			["@keyword.operator"] = { link = "Operator" },
+			["@type"] = { fg = palette.foam, italic = styles.italic },
+			["@type.builtin"] = { fg = palette.foam }, -- Special in Dracula
+			["@attribute"] = { fg = palette.rose, italic = styles.italic },
+			["@attribute.builtin"] = { fg = palette.rose, bold = styles.bold },
+			["@property"] = { fg = palette.text }, -- Identifier in Dracula
+			["@variable"] = { fg = palette.text },
+			["@variable.builtin"] = dracula.purple_italic,
+			["@variable.parameter"] = { fg = dracula.orange, italic = styles.italic },
+			["@variable.parameter.builtin"] = { fg = dracula.orange, italic = styles.italic, bold = styles.bold },
+			["@variable.member"] = { fg = dracula.orange },
+			["@module"] = { fg = palette.foam }, -- Structure/cyan
+			["@module.builtin"] = { fg = palette.foam },
+			["@label"] = dracula.purple_italic,
+			["@operator"] = { link = "Operator" },
+			["@punctuation.delimiter"] = { fg = palette.text },
+			["@punctuation.bracket"] = { fg = palette.text },
+			["@punctuation.special"] = { link = "Special" },
+			["@tag"] = { fg = palette.foam },
+			["@tag.attribute"] = { fg = palette.rose, italic = styles.italic },
+			["@tag.delimiter"] = { fg = palette.text },
+			["@markup.heading"] = { fg = dracula.yellow },
+
+			-- LSP semantic tokens mirror the same roles
+			["@lsp.type.class"] = { link = "@type" },
+			["@lsp.type.decorator"] = { link = "@attribute" },
+			["@lsp.type.enumMember"] = { fg = palette.iris },
+			["@lsp.type.function"] = { link = "@function" },
+			["@lsp.type.macro"] = { fg = palette.foam },
+			["@lsp.type.method"] = { link = "@function" },
+			["@lsp.type.namespace"] = { link = "@module" },
+			["@lsp.type.parameter"] = { link = "@variable.parameter" },
+			["@lsp.type.property"] = { link = "@variable.member" },
+			["@lsp.type.typeParameter"] = { fg = dracula.pink },
+			["@lsp.type.variable"] = { link = "@variable" },
+		}
+		dracula_highlights = highlights
+		highlights = {}
+	end
 	local legacy_highlights = {
 		["@attribute.diff"] = { fg = palette.gold },
 		["@boolean"] = { link = "Boolean" },
@@ -416,24 +525,52 @@ local function set_highlights()
 		-- ["@nospell"] = {},
 
 		--- Semantic
+		["@lsp.type.boolean"] = { link = "@boolean" },
+		["@lsp.type.builtinType"] = { link = "@type.builtin" },
 		["@lsp.type.comment"] = {},
 		["@lsp.type.comment.c"] = { link = "@comment" },
 		["@lsp.type.comment.cpp"] = { link = "@comment" },
+		["@lsp.type.decorator"] = { link = "@attribute" },
+		["@lsp.type.deriveHelper"] = { link = "@attribute" },
 		["@lsp.type.enum"] = { link = "@type" },
+		["@lsp.type.enumMember"] = { link = "@constant" },
+		["@lsp.type.escapeSequence"] = { link = "@string.escape" },
+		["@lsp.type.formatSpecifier"] = { link = "@markup.list" },
+		["@lsp.type.generic"] = { link = "@variable" },
 		["@lsp.type.interface"] = { link = "@interface" },
 		["@lsp.type.keyword"] = { link = "@keyword" },
+		["@lsp.type.lifetime"] = { link = "@keyword.storage" },
 		["@lsp.type.namespace"] = { link = "@namespace" },
 		["@lsp.type.namespace.python"] = { link = "@variable" },
+		["@lsp.type.number"] = { link = "@number" },
+		["@lsp.type.operator"] = { link = "@operator" },
 		["@lsp.type.parameter"] = { link = "@parameter" },
 		["@lsp.type.property"] = { link = "@property" },
+		["@lsp.type.selfKeyword"] = { link = "@variable.builtin" },
+		["@lsp.type.selfTypeKeyword"] = { link = "@variable.builtin" },
+		["@lsp.type.string"] = { link = "@string" },
+		["@lsp.type.typeAlias"] = { link = "@type" },
+		["@lsp.type.unresolvedReference"] = { sp = groups.error, undercurl = true },
 		["@lsp.type.variable"] = {}, -- defer to treesitter for regular variables
 		["@lsp.type.variable.svelte"] = { link = "@variable" },
+		["@lsp.typemod.class.defaultLibrary"] = { link = "@type.builtin" },
+		["@lsp.typemod.enum.defaultLibrary"] = { link = "@type.builtin" },
+		["@lsp.typemod.enumMember.defaultLibrary"] = { link = "@constant.builtin" },
 		["@lsp.typemod.function.defaultLibrary"] = { link = "@function.builtin" },
+		["@lsp.typemod.keyword.async"] = { link = "@keyword" },
+		["@lsp.typemod.keyword.injected"] = { link = "@keyword" },
+		["@lsp.typemod.macro.defaultLibrary"] = { link = "@function.builtin" },
+		["@lsp.typemod.method.defaultLibrary"] = { link = "@function.builtin" },
 		["@lsp.typemod.operator.injected"] = { link = "@operator" },
 		["@lsp.typemod.string.injected"] = { link = "@string" },
+		["@lsp.typemod.struct.defaultLibrary"] = { link = "@type.builtin" },
+		["@lsp.typemod.type.defaultLibrary"] = { link = "@type.builtin" },
+		["@lsp.typemod.typeAlias.defaultLibrary"] = { link = "@type.builtin" },
+		["@lsp.typemod.variable.callable"] = { link = "@function" },
 		["@lsp.typemod.variable.constant"] = { link = "@constant" },
 		["@lsp.typemod.variable.defaultLibrary"] = { link = "@variable.builtin" },
 		["@lsp.typemod.variable.injected"] = { link = "@variable" },
+		["@lsp.typemod.variable.static"] = { link = "@constant" },
 
 		--- Plugins
 		-- romgrk/barbar.nvim
@@ -554,9 +691,11 @@ local function set_highlights()
 		WhichKeyValue = { fg = palette.rose },
 
 		-- lukas-reineke/indent-blankline.nvim
-		IblIndent = { fg = palette.overlay },
-		IblScope = { fg = palette.foam },
-		IblWhitespace = { fg = palette.overlay },
+		-- nocombine keeps indent virtual text from merging with (and hiding)
+		-- the Cursor highlight when they overlap (see #371).
+		IblIndent = { fg = palette.overlay, nocombine = true },
+		IblScope = { fg = palette.foam, nocombine = true },
+		IblWhitespace = { fg = palette.overlay, nocombine = true },
 
 		-- hrsh7th/nvim-cmp
 		CmpItemAbbr = { fg = palette.subtle },
@@ -1108,9 +1247,9 @@ local function set_highlights()
 		WhichKeyFloat = { bg = "NONE" },
 		WhichKeyNormal = { bg = "NONE" },
 
-		IblIndent = { fg = palette.overlay, bg = "NONE" },
-		IblScope = { fg = palette.foam, bg = "NONE" },
-		IblWhitespace = { fg = palette.overlay, bg = "NONE" },
+		IblIndent = { fg = palette.overlay, bg = "NONE", nocombine = true },
+		IblScope = { fg = palette.foam, bg = "NONE", nocombine = true },
+		IblWhitespace = { fg = palette.overlay, bg = "NONE", nocombine = true },
 
 		TreesitterContext = { bg = "NONE" },
 		TreesitterContextLineNumber = { fg = palette.rose, bg = "NONE" },
@@ -1128,6 +1267,13 @@ local function set_highlights()
 	end
 	for group, highlight in pairs(default_highlights) do
 		highlights[group] = highlight
+	end
+	-- Dracula syntax remap wins over the Rosé Pine syntax defaults above,
+	-- but user highlight_groups below still win over it.
+	if palette._dracula and dracula_highlights ~= nil then
+		for group, highlight in pairs(dracula_highlights) do
+			highlights[group] = highlight
+		end
 	end
 	if styles.transparency then
 		for group, highlight in pairs(transparency_highlights) do
@@ -1220,6 +1366,29 @@ end
 
 ---@param variant Variant | nil
 function M.colorscheme(variant)
+	-- nil fires when Neovim reloads the plain `rose-pine` file, notably on
+	-- `:set background=...` after `g:colors_name` is set. Resolve it from
+	-- the requested `background` (plus `dark_variant`) instead of replaying the
+	-- variant an explicit `rose-pine-{main,moon,dawn,dracula}` file stored earlier.
+	-- Without this, `colorscheme rose-pine-dawn` followed by
+	-- `colorscheme rose-pine` (which Neovim triggers on `:set background`)
+	-- would keep rendering dawn colors (see #379).
+	if variant == nil then
+		-- Plain `rose-pine` (including Neovim's automatic reload on
+		-- `:set background=...`): follow setup()'s `variant` when pinned,
+		-- otherwise reset to auto so palette.lua resolves the live
+		-- `background` (plus `dark_variant`) below. Reading `background`
+		-- here would see the stale pre-reload value, and replaying the
+		-- variant stored by an earlier explicit
+		-- `rose-pine-{main,moon,dawn,dracula}` load is what locked the theme
+		-- until restart (see #379). An explicit variant file still wins
+		-- when loaded directly.
+		if M._setup_variant ~= nil then
+			variant = M._setup_variant
+		else
+			variant = "auto"
+		end
+	end
 	config.extend_options({ variant = variant })
 
 	vim.opt.termguicolors = true
@@ -1231,7 +1400,7 @@ function M.colorscheme(variant)
 
 	if variant == "dawn" then
 		vim.o.background = "light"
-	elseif variant == "main" or variant == "moon" then
+	elseif variant == "main" or variant == "moon" or variant == "dracula" then
 		vim.o.background = "dark"
 	end
 
@@ -1241,6 +1410,7 @@ end
 ---@param options Options
 function M.setup(options)
 	config.extend_options(options or {})
+	M._setup_variant = (options or {}).variant
 end
 
 return M

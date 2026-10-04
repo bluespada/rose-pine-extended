@@ -1,10 +1,13 @@
 local p = require("rose-pine.palette")
-local config = require("rose-pine.config")
 
+-- NOTE: intentionally no transparency handling here: lualine renders its
+-- separators as transitional highlights built from the section background
+-- colors, and a "NONE" section background produces a missing-background
+-- separator highlight that the terminal then shows as white (see
+-- rose-pine/neovim#288). Keep an opaque section background; transparency
+-- still applies to the editor itself via the Normal/StatusLine highlights.
+-- Reverted twice before (d6112a7, fc418a7): "NONE" reintroduces the bug.
 local bg_base = p.surface
-if config.options.styles.transparency then
-	bg_base = "NONE"
-end
 
 return {
 	normal = {
